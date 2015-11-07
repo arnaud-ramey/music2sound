@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- doc: http://wiki.ros.org/catkin/package.xml -->
+<package format="2">
+  <name>music2sound</name>
+  <version>1.0.0</version>
+  <description>
+    music2sound is a sound generator using music scores (also called music sheets).
+    To date, only one generator is offered, based on piano key sounds and
+    SoX audio copy/pasting.
+    In the future, more generators will be implemented,
+    for instance a MIDI synthethizer or the "beep" utility.
+  </description>
+  <maintainer email="arnaud.a.ramey@gmail.com">Arnaud Ramey</maintainer>
+  <license>LGPLv3</license>
+  <!-- dependencies -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>roslib</depend>
+
+  <export>
+    <rosdoc config="rosdoc.yaml" /> <!-- http://wiki.ros.org/rosdoc_lite -->
+  </export>
+</package>
