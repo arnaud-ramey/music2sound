@@ -52,7 +52,7 @@ public:
     if (in.substr(0, 3) == "BPM" || in.substr(0, 3) == "bpm") { // BPM:
       type = TYPE_BPM;
       bpm = utils::cast_from_string<int>(in.substr(4));
-      if (bpm < 1 || bpm > 300) {
+      if (bpm < .2 || bpm > 300) {
         printf("ScoreElem::from_string(): incorrect BPM '%s'\n", in.c_str());
         return false;
       }

@@ -154,23 +154,6 @@ TEST(TestSuite, soundlist_from_score) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void test_play(const std::string & s) {
-  SoxGenerator prim;
-  prim.set_path_prefix(PATH + "/data/piano/Piano.ff.");
-  prim.set_path_suffix(".wav");
-  ASSERT_TRUE(prim.generate(s));
-  sleep(1);
-}
-
-TEST(TestSuite, play01) { test_play("A6"); }
-TEST(TestSuite, play02) { test_play("A4,{},A4"); }
-TEST(TestSuite, play03) { test_play("BPM=2, C5,D5,E5,F5,G5,A5,B5"); }
-TEST(TestSuite, play04) { test_play("E6, D6, C6, D6, E6"); }
-TEST(TestSuite, play05) { test_play("BPM:10, E6, D6, C6, D6, E6"); }
-TEST(TestSuite, play_file1) { test_play(PATH + "/data/music_scores/happy_birthday.score"); }
-TEST(TestSuite, play_file2) { test_play(PATH + "/data/music_scores/happy_birthday2.score"); }
-
-////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char **argv){
   // Run all the tests that were declared with TEST()

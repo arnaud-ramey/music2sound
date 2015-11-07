@@ -62,8 +62,10 @@ public:
     std::string score_str = score;
     // read file if it is a file
     if (score.find(".score") != std::string::npos
-        && !utils::retrieve_file(score, score_str))
+        && !utils::retrieve_file(score, score_str)) {
+      printf("Could not read score file'%s'!\n", score.c_str());
       return false;
+    }
 
     std::ostringstream instr;
     int BPM = SoundList::DEFAULT_BPM;
@@ -85,20 +87,21 @@ public:
         ++nsilences;
         continue;
       }
+      if (!_note2frequency.count(curr_note->note_name)) {
+        printf("Not found note '%s'\n", curr_note->note_name.c_str());
+        continue;
+      }
       if (i - nsilences > 0)
         instr << "  --new";
       double frequency_hz = _note2frequency[curr_note->note_name];
       double duration_ms = curr_note->duration * 1000;
-      if (curr_note->note_name == "{}") // silence
-        continue;
-      instr << " -f " << frequency_hz
-            << " -l " << duration_ms;
+      instr << " -f " << frequency_hz << " -l " << duration_ms;
     } // end for i
     // do not play if only silences
     if (nsilences == nnotes)
       return true;
     printf("instr:'%s'\n", instr.str().c_str());
-    return utils::exec_system(instr.str());
+    return (utils::exec_system(instr.str()) == 0);
   } // end generate()
 
   int _volume;

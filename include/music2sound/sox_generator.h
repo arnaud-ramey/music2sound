@@ -40,8 +40,10 @@ public:
     std::string score_str = score;
     // read file if it is a file
     if (score.find(".score") != std::string::npos
-        && !utils::retrieve_file(score, score_str))
+        && !utils::retrieve_file(score, score_str)) {
+      printf("Could not read score file'%s'!\n", score.c_str());
       return false;
+    }
 
     std::ostringstream instr;
     CachedFilesMap::Key key = score_str;
@@ -57,6 +59,8 @@ public:
         return false;
       if (_sound_list.tnotes.empty())
         return true;
+      unsigned int nnotes = _sound_list.tnotes.size(), nsilences = 0;
+      printf("SoxGenerator: synthetizing a sentence of %i notes...\n", nnotes);
       // create an empty sound with SoX
       // http://activearchives.org/wiki/Padding_an_audio_file_with_silence_using_sox
       double duration = _sound_list.duration;
@@ -67,7 +71,6 @@ public:
       // http://sox.sourceforge.net/Docs/FAQ
       //  sox -m f1.wav "|sox f2.wav -p pad 4" "|sox f3.wav -p pad 8" out.wav
       // sox -m $OUT "|sox $FILE -p pad 1" "|sox $FILE -p pad .5"  "|sox $FILE -p pad 1.5" --norm $OUT
-      unsigned int nnotes = _sound_list.tnotes.size(), nsilences = 0;
       instr.str("");
       instr << "sox -m " << WAV_BUFFER;
       for (int i = 0; i < nnotes; ++i) {

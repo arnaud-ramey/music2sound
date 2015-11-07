@@ -15,6 +15,12 @@ catkin_package(
 )
 ### 7 - Libraries/Executables to build (add_library()/add_executable()/target_link_libraries())
 include_directories( include ${catkin_INCLUDE_DIRS})
+add_executable(test_beep_generator src/test_beep_generator.cpp
+            include/music2sound/sound_list.h
+            include/music2sound/beep_generator.h
+            include/music2sound/utils.h)
+target_link_libraries(test_beep_generator  ${catkin_LIBRARIES})
+
 add_executable(test_sox_generator src/test_sox_generator.cpp
             include/music2sound/cached_files_map.h
             include/music2sound/sound_list.h
@@ -22,15 +28,22 @@ add_executable(test_sox_generator src/test_sox_generator.cpp
             include/music2sound/utils.h)
 target_link_libraries(test_sox_generator  ${catkin_LIBRARIES})
 
-add_executable(test_beep_generator src/test_beep_generator.cpp
-            include/music2sound/sound_list.h
-            include/music2sound/beep_generator.h
-            include/music2sound/utils.h)
-target_link_libraries(test_beep_generator  ${catkin_LIBRARIES})
+add_executable(ros_beep_generator src/ros_beep_generator.cpp)
+target_link_libraries(ros_beep_generator  ${catkin_LIBRARIES})
+
+add_executable(ros_sox_generator src/ros_sox_generator.cpp)
+target_link_libraries(ros_sox_generator  ${catkin_LIBRARIES})
 
 ### 8 - Tests to build (catkin_add_gtest())
 catkin_add_gtest(gtest_sound_list test/gtest_sound_list.cpp)
 target_link_libraries(gtest_sound_list  ${catkin_LIBRARIES})
+
+catkin_add_gtest(gtest_beep_generator test/gtest_beep_generator.cpp)
+target_link_libraries(gtest_beep_generator  ${catkin_LIBRARIES})
+
+catkin_add_gtest(gtest_sox_generator test/gtest_sox_generator.cpp)
+target_link_libraries(gtest_sox_generator  ${catkin_LIBRARIES})
+
 ### 9 - Install rules (install())
 install(DIRECTORY include/${PROJECT_NAME}/
    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
