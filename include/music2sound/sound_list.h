@@ -145,12 +145,13 @@ public:
 class SoundList {
 public:
   static const int DEFAULT_BPM = 5;
-  typedef std::string Note;
+  typedef std::string NoteName;
   typedef double Time;
   struct TimedNote {
-    Time time;
-    Note note_name;
-    int volume;
+    NoteName note_name; // for ex. "A6"
+    Time time; // seconds
+    double duration; // seconds
+    int volume; // 0 .. 100
   };
   bool from_score(const Score & s, int BPM = DEFAULT_BPM) {
     unsigned int nnotes = s.notes.size();
@@ -173,13 +174,14 @@ public:
         curr_bpm_inv = 1. / e->bpm;
       }
       else if (e->type == ScoreElem::TYPE_NOTE) {
-        if (e->note_name != "{}")  { // not a silence
+        //if (e->note_name != "{}")  { // not a silence
           TimedNote tnote;
           tnote.time = curr_time;
           tnote.note_name = e->note_name;
           tnote.volume = curr_volume;
+          tnote.duration = e->note_duration * curr_bpm_inv;
           tnotes.push_back(tnote);
-        }
+        //}
         curr_time += e->note_duration * curr_bpm_inv;
       }
     } // end loop note_idx

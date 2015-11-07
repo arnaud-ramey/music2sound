@@ -67,17 +67,24 @@ public:
       // http://sox.sourceforge.net/Docs/FAQ
       //  sox -m f1.wav "|sox f2.wav -p pad 4" "|sox f3.wav -p pad 8" out.wav
       // sox -m $OUT "|sox $FILE -p pad 1" "|sox $FILE -p pad .5"  "|sox $FILE -p pad 1.5" --norm $OUT
-      unsigned int nnotes = _sound_list.tnotes.size();
+      unsigned int nnotes = _sound_list.tnotes.size(), nsilences = 0;
       instr.str("");
       instr << "sox -m " << WAV_BUFFER;
       for (int i = 0; i < nnotes; ++i) {
         SoundList::TimedNote* curr_note = &(_sound_list.tnotes[i]);
+        if (curr_note->note_name == "{}") { // silence
+          ++nsilences;
+          continue;
+        }
         instr << " \"| sox " << _path_prefix << curr_note->note_name << _path_suffix
               << " -p pad "<< curr_note->time << "\" ";
       } // end for i
-      instr << "--norm=-3 "
-          << WAV_BUFFER;
-      // printf("creating sound '%s' \n", instr.str().c_str());
+      instr << " --norm=-3 " << WAV_BUFFER;
+      instr << " 2> /dev/null";
+      // do not play if only silences
+      if (nsilences == nnotes)
+        return true;
+      //printf("creating sound '%s' \n", instr.str().c_str());
       if (utils::exec_system(instr.str()))
         return false;
       curr_wav_filename = WAV_BUFFER;

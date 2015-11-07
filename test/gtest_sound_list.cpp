@@ -141,20 +141,20 @@ TEST(TestSuite, soundlist_from_score) {
 
   ASSERT_TRUE(score.from_string("BPM=10, 1/2-A1,1/2-{}, B2, {}, C3"));
   ASSERT_TRUE(sl.from_score(score));
-  ASSERT_TRUE(sl.tnotes.size() == 3);
+  ASSERT_TRUE(sl.tnotes.size() == 5);
   ASSERT_TRUE(fabs(sl.duration - .4) < 1E-2);
   tnote = sl.tnotes[0];
   ASSERT_TRUE(tnote.time == 0 && tnote.volume == 100 && tnote.note_name == "A1");
-  tnote = sl.tnotes[1];
+  tnote = sl.tnotes[2];
   ASSERT_TRUE(fabs(tnote.time-.1)<1E-2
               && tnote.volume == 100 && tnote.note_name == "B2");
-  tnote = sl.tnotes[2];
+  tnote = sl.tnotes[4];
   ASSERT_TRUE(fabs(tnote.time-.3)<1E-2
               && tnote.volume == 100 && tnote.note_name == "C3");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void test_simple_play(const std::string & s) {
+void test_play(const std::string & s) {
   SoxGenerator prim;
   prim.set_path_prefix(PATH + "/data/piano/Piano.ff.");
   prim.set_path_suffix(".wav");
@@ -162,13 +162,13 @@ void test_simple_play(const std::string & s) {
   sleep(1);
 }
 
-TEST(TestSuite, simple_play) {
- test_simple_play("BPM=2, C5,D5,E5,F5,G5,A5,B5");
- test_simple_play("E6, D6, C6, D6, E6");
- test_simple_play("BPM:10, E6, D6, C6, D6, E6");
- test_simple_play(PATH + "/data/music_scores/happy_birthday.score");
- test_simple_play(PATH + "/data/music_scores/happy_birthday2.score");
-}
+TEST(TestSuite, play01) { test_play("A6"); }
+TEST(TestSuite, play02) { test_play("A4,{},A4"); }
+TEST(TestSuite, play03) { test_play("BPM=2, C5,D5,E5,F5,G5,A5,B5"); }
+TEST(TestSuite, play04) { test_play("E6, D6, C6, D6, E6"); }
+TEST(TestSuite, play05) { test_play("BPM:10, E6, D6, C6, D6, E6"); }
+TEST(TestSuite, play_file1) { test_play(PATH + "/data/music_scores/happy_birthday.score"); }
+TEST(TestSuite, play_file2) { test_play(PATH + "/data/music_scores/happy_birthday2.score"); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
