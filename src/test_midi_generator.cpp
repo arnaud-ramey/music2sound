@@ -52,7 +52,6 @@ public:
 
   /** Construct a new MidiFile with an empty playback event list */
   MidiFile() {
-    //playEvents = new std::vector<std::vector<int> >();
     static const int arr1[] = {
       0x4d, 0x54, 0x68, 0x64, 0x00, 0x00, 0x00, 0x06,
       0x00, 0x00, // single-track format
@@ -74,7 +73,7 @@ public:
     };
     tempoEvent = std::vector<int> (arr3, arr3 + sizeof(arr3) / sizeof(arr3[0]) );
 
-    // A MIDI event to set the key signature. This is irrelent to
+    // A MIDI event to set the key signature. This is irrelevent to
     //  playback, but necessary for editing applications
     static const int arr4[] = {
       0x00, 0xFF, 0x59, 0x02,
@@ -83,7 +82,7 @@ public:
     };
     keySigEvent = std::vector<int> (arr4, arr4 + sizeof(arr4) / sizeof(arr4[0]) );
 
-    // A MIDI event to set the time signature. This is irrelent to
+    // A MIDI event to set the time signature. This is irrelevent to
     //  playback, but necessary for editing applications
     static const int arr5[] = {
       0x00, 0xFF, 0x58, 0x04,
@@ -100,16 +99,13 @@ public:
   /** Write the stored MIDI events to a file */
   void writeToFile (const std::string & filename) {
     std::ofstream fos (filename.c_str());
-
     fos << intArrayToByteArray (header);
 
     // Calculate the amount of track data
     // _Do_ include the footer but _do not_ include the
     // track header
-
     int size = tempoEvent.size() + keySigEvent.size() + timeSigEvent.size()
                + footer.size();
-
     for (int i = 0; i < playEvents.size(); i++)
       size += playEvents.at(i).size();
 
@@ -141,8 +137,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
 
   /** Store a note-on event */
-  void noteOn (int delta, int note, int velocity)
-  {
+  void noteOn (int delta, int note, int velocity) {
     std::vector<int> data(4);
     data[0] = delta;
     data[1] = 0x90;
@@ -154,8 +149,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
 
   /** Store a note-off event */
-  void noteOff (int delta, int note)
-  {
+  void noteOff (int delta, int note) {
     std::vector<int> data(4);
     data[0] = delta;
     data[1] = 0x80;
@@ -167,8 +161,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////
 
   /** Store a program-change event at current position */
-  void progChange (int prog)
-  {
+  void progChange (int prog) {
     std::vector<int> data(3);
     data[0] = 0;
     data[1] = 0xC0;
@@ -181,45 +174,38 @@ public:
   /** Store a note-on event followed by a note-off event a note length
       later. There is no delta value — the note is assumed to
       follow the previous one with no gap. */
-  void noteOnOffNow (int duration, int note, int velocity)
-  {
+  void noteOnOffNow (int duration, int note, int velocity) {
     noteOn (0, note, velocity);
     noteOff (duration, note);
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  void noteSequenceFixedVelocity (const std::vector<int> & sequence, int velocity)
-  {
+  void noteSequenceFixedVelocity (const std::vector<int> & sequence, int velocity) {
     bool lastWasRest = false;
     int restDelta = 0;
-    for (int i = 0; i < sequence.size(); i += 2)
-    {
+    for (int i = 0; i < sequence.size(); i += 2) {
       int note = sequence[i];
       int duration = sequence[i + 1];
-      if (note < 0)
-      {
+      if (note < 0) {
         // This is a rest
         restDelta += duration;
         lastWasRest = true;
       }
-      else
-      {
+      else {
         // A note, not a rest
-        if (lastWasRest)
-        {
+        if (lastWasRest) {
           noteOn (restDelta, note, velocity);
           noteOff (duration, note);
         }
-        else
-        {
+        else {
           noteOn (0, note, velocity);
           noteOff (duration, note);
         }
         restDelta = 0;
         lastWasRest = false;
-      }
-    }
+      } // end (note > 0)
+    } // end for i
   } // end noteSequenceFixedVelocity()
 
   //////////////////////////////////////////////////////////////////////////////
@@ -261,7 +247,6 @@ protected:
 
   // The collection of events to play, in time order
   std::vector<std::vector<int> > playEvents;
-
 }; // end class MidiFile
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -269,7 +254,6 @@ protected:
 int main(int argc, char** argv) {
   MidiFile mf;
   // Test 1 — play a C major chord
-
   // Turn on all three notes at start-of-track (delta=0)
   mf.noteOn (0, 60, 127);
   mf.noteOn (0, 64, 127);
@@ -286,7 +270,6 @@ int main(int argc, char** argv) {
   // Test 2 — play a scale using noteOnOffNow
   //  We don't need any delta values here, so long as one
   //  note comes straight after the previous one
-
   mf.noteOnOffNow (MidiFile::QUAVER, 60, 127);
   mf.noteOnOffNow (MidiFile::QUAVER, 62, 127);
   mf.noteOnOffNow (MidiFile::QUAVER, 64, 127);
