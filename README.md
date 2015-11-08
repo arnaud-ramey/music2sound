@@ -26,6 +26,7 @@ To date, three generators are offered:
 
   3. **SoxGeneratpr**: based on WAV sounds of piano keys and SoX audio copy/pasting.
     Piano samples from http://theremin.music.uiowa.edu/MIS.html
+
     SoX is available in Ubuntu repos.
     More info:
     http://sox.sourceforge.net/Docs/FAQ

@@ -126,8 +126,8 @@ inline bool save_file(const std::string & filepath, const std::string & content)
 //! execute a system instruction in a safe mode
 inline int exec_system(const std::string & instr) {
   int return_value = system(instr.c_str());
-  if (return_value < 0)
-    printf("system('%s') returned %i < 0!\n", instr.c_str(), return_value);
+  if (return_value != 0)
+    printf("system('%s') returned %i != 0!\n", instr.c_str(), return_value);
   return return_value;
 } // end system()
 

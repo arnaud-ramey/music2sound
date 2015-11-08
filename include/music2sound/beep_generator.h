@@ -73,7 +73,7 @@ public:
       return false;
     if (_sound_list.tnotes.empty())
       return true;
-    unsigned int nnotes = _sound_list.tnotes.size(), nsilences = 0;
+    unsigned int nnotes = _sound_list.tnotes.size(), nnon_silent = 0;
     // beep -f 1000 -r 2 -n -r 5 -l 10 --new
     // will produce first two 1000Hz beeps, then 5 beeps at the default tone,
     // but only 10ms long each, followed by
@@ -82,23 +82,23 @@ public:
     for (unsigned int i = 0; i < nnotes; ++i) {
       SoundList::TimedNote* curr_note = &(_sound_list.tnotes[i]);
       if (curr_note->note_name == "{}") { // silence
-        if (i - nsilences > 0) // only add -D if there was a note before
+        if (nnon_silent > 0) // only add -D if there was a note before
           instr << " -D " << curr_note->duration * 1000;
-        ++nsilences;
         continue;
       }
       if (!_note2frequency.count(curr_note->note_name)) {
         printf("BeepGenerator: not found note '%s'\n", curr_note->note_name.c_str());
         continue;
       }
-      if (i - nsilences > 0)
+      if (nnon_silent > 0)
         instr << "  --new";
+      ++nnon_silent;
       double frequency_hz = _note2frequency[curr_note->note_name];
       double duration_ms = curr_note->duration * 1000;
       instr << " -f " << frequency_hz << " -l " << duration_ms;
     } // end for i
     // do not play if only silences
-    if (nsilences == nnotes)
+    if (nnon_silent == 0)
       return true;
     printf("BeepGenerator: instr:'%s'\n", instr.str().c_str());
     return (utils::exec_system(instr.str()) == 0);

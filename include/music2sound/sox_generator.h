@@ -57,9 +57,9 @@ public:
       int BPM = SoundList::DEFAULT_BPM;
       if (!_score.from_string(score_str) || !_sound_list.from_score(_score, BPM))
         return false;
-      if (_sound_list.tnotes.empty())
+      unsigned int nnotes = _sound_list.tnotes.size(), nnon_silent = 0;
+      if (nnotes == 0)
         return true;
-      unsigned int nnotes = _sound_list.tnotes.size(), nsilences = 0;
       printf("SoxGenerator: synthetizing a sentence of %i notes...\n", nnotes);
       // create an empty sound with SoX
       // http://activearchives.org/wiki/Padding_an_audio_file_with_silence_using_sox
@@ -75,17 +75,20 @@ public:
       instr << "sox -m " << WAV_BUFFER;
       for (unsigned int i = 0; i < nnotes; ++i) {
         SoundList::TimedNote* curr_note = &(_sound_list.tnotes[i]);
-        if (curr_note->note_name == "{}") { // silence
-          ++nsilences;
+        if (curr_note->note_name == "{}") // silence
+          continue;
+        std::string filename = _path_prefix + curr_note->note_name + _path_suffix;
+        if (!utils::file_exists(filename)) {
+          printf("SoxGenerator: note file '%s' does not exist!\n", filename.c_str());
           continue;
         }
-        instr << " \"| sox " << _path_prefix << curr_note->note_name << _path_suffix
-              << " -p pad "<< curr_note->time << "\" ";
+        ++nnon_silent;
+        instr << " \"| sox " << filename << " -p pad "<< curr_note->time << "\" ";
       } // end for i
       instr << " --norm=-3 " << WAV_BUFFER;
       instr << " 2> /dev/null";
       // do not play if only silences
-      if (nsilences == nnotes)
+      if (nnon_silent == 0)
         return true;
       //printf("creating sound '%s' \n", instr.str().c_str());
       if (utils::exec_system(instr.str()))
