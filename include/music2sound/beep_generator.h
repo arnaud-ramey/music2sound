@@ -1,5 +1,5 @@
 /*!
-  \file
+  \file        beep_generator.h
   \author      Arnaud Ramey <arnaud.a.ramey@gmail.com>
                 -- Robotics Lab, University Carlos III of Madrid
   \date        2015/11/7
@@ -41,7 +41,7 @@ public:
       return;
     }
     unsigned int nlines = lines.size();
-    for (int i = 0; i < nlines; ++i) {
+    for (unsigned int i = 0; i < nlines; ++i) {
       if (lines[i].size() && lines[i][0] == '#') // comment
         continue; // skip line
       utils::StringSplit(lines[i], ",", &words);
@@ -79,7 +79,7 @@ public:
     // but only 10ms long each, followed by
     // a third beep using all the default settings (since none are specified)
     instr << "beep";
-    for (int i = 0; i < nnotes; ++i) {
+    for (unsigned int i = 0; i < nnotes; ++i) {
       SoundList::TimedNote* curr_note = &(_sound_list.tnotes[i]);
       if (curr_note->note_name == "{}") { // silence
         if (i - nsilences > 0) // only add -D if there was a note before
@@ -88,7 +88,7 @@ public:
         continue;
       }
       if (!_note2frequency.count(curr_note->note_name)) {
-        printf("Not found note '%s'\n", curr_note->note_name.c_str());
+        printf("BeepGenerator: not found note '%s'\n", curr_note->note_name.c_str());
         continue;
       }
       if (i - nsilences > 0)
@@ -100,14 +100,14 @@ public:
     // do not play if only silences
     if (nsilences == nnotes)
       return true;
-    printf("instr:'%s'\n", instr.str().c_str());
+    printf("BeepGenerator: instr:'%s'\n", instr.str().c_str());
     return (utils::exec_system(instr.str()) == 0);
   } // end generate()
 
   int _volume;
   Score _score;
   SoundList _sound_list;
-  std::map<std::string, float> _note2frequency;
+  std::map<std::string, double> _note2frequency;
 }; // end class BeepGenerator
 
 #endif // BEEP_GENERATOR_H

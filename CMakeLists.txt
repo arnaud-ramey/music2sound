@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 ### 2- Package Name
 project(music2sound)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra") # add extra warnings
 ### 3 - Find other CMake/Catkin packages needed for build
 find_package(catkin REQUIRED COMPONENTS
   roscpp  roslib)
@@ -17,7 +18,11 @@ catkin_package(
 ### 7 - Libraries/Executables to build (add_library()/add_executable()/target_link_libraries())
 include_directories( include ${catkin_INCLUDE_DIRS})
 
-add_executable(test_midi_generator src/test_midi_generator.cpp)
+add_executable(test_midi_generator src/test_midi_generator.cpp
+            include/music2sound/sound_list.h
+            include/music2sound/midifile.h
+            include/music2sound/midi_generator.h
+            include/music2sound/utils.h)
 target_link_libraries(test_midi_generator  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(test_beep_generator src/test_beep_generator.cpp
@@ -36,6 +41,9 @@ target_link_libraries(test_sox_generator  ${catkin_LIBRARIES} ${Boost_LIBRARIES}
 add_executable(ros_beep_generator src/ros_beep_generator.cpp)
 target_link_libraries(ros_beep_generator  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
+add_executable(ros_midi_generator src/ros_midi_generator.cpp)
+target_link_libraries(ros_midi_generator  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
 add_executable(ros_sox_generator src/ros_sox_generator.cpp)
 target_link_libraries(ros_sox_generator  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
@@ -45,6 +53,9 @@ target_link_libraries(gtest_sound_list  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 catkin_add_gtest(gtest_beep_generator test/gtest_beep_generator.cpp)
 target_link_libraries(gtest_beep_generator  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+catkin_add_gtest(gtest_midi_generator test/gtest_midi_generator.cpp)
+target_link_libraries(gtest_midi_generator  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 catkin_add_gtest(gtest_sox_generator test/gtest_sox_generator.cpp)
 target_link_libraries(gtest_sox_generator  ${catkin_LIBRARIES} ${Boost_LIBRARIES})

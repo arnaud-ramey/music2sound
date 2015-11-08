@@ -36,7 +36,7 @@ void test_play(const std::string & s) {
 
 TEST(TestSuite, play_empty1) { test_play("{}"); }
 TEST(TestSuite, play_empty2) { test_play("BPM=10"); }
-TEST(TestSuite, play_wrong1) { test_play("A9"); }
+TEST(TestSuite, play_wrong1) { test_play("A12"); }
 TEST(TestSuite, play01) { test_play("A6"); }
 TEST(TestSuite, play02) { test_play("A4,{},A4"); }
 TEST(TestSuite, play03) { test_play("BPM=2, C5,D5,E5,F5,G5,A5,B5"); }

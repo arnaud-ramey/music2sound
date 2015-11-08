@@ -1,5 +1,5 @@
 /*!
-  \file
+  \file        sox_generator.h
   \author      Arnaud Ramey <arnaud.a.ramey@gmail.com>
                 -- Robotics Lab, University Carlos III of Madrid
   \date        2015/11/7
@@ -73,7 +73,7 @@ public:
       // sox -m $OUT "|sox $FILE -p pad 1" "|sox $FILE -p pad .5"  "|sox $FILE -p pad 1.5" --norm $OUT
       instr.str("");
       instr << "sox -m " << WAV_BUFFER;
-      for (int i = 0; i < nnotes; ++i) {
+      for (unsigned int i = 0; i < nnotes; ++i) {
         SoundList::TimedNote* curr_note = &(_sound_list.tnotes[i]);
         if (curr_note->note_name == "{}") { // silence
           ++nsilences;
