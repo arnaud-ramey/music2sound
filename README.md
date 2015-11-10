@@ -58,7 +58,7 @@ A simple ROS wrapper has been implemented for each of the generators.
 It is called "ros_*_generator", for instance "ros_sox_generator".
 It subscribes to a "std_msgs::String" message and generates the corresponding sound.
 
-# Tests
+### Tests
 
 You need three terminals.
 For example, with MidiGenerator:
