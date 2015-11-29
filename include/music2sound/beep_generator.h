@@ -58,21 +58,22 @@ public:
 
   //////////////////////////////////////////////////////////////////////////////
 
-  bool generate(const std::string & score) {
+  //! \return the number of genereted notes, 0 if empty, or -1 if failure
+  int generate(const std::string & score) {
     std::string score_str = score;
     // read file if it is a file
     if (score.find(".score") != std::string::npos
         && !utils::retrieve_file(score, score_str)) {
       printf("Could not read score file'%s'!\n", score.c_str());
-      return false;
+      return -1;
     }
 
     std::ostringstream instr;
     int BPM = SoundList::DEFAULT_BPM;
     if (!_score.from_string(score_str) || !_sound_list.from_score(_score, BPM))
-      return false;
+      return -1;
     if (_sound_list.tnotes.empty())
-      return true;
+      return 0;
     unsigned int nnotes = _sound_list.tnotes.size(), nnon_silent = 0;
     // beep -f 1000 -r 2 -n -r 5 -l 10 --new
     // will produce first two 1000Hz beeps, then 5 beeps at the default tone,
@@ -99,9 +100,11 @@ public:
     } // end for i
     // do not play if only silences
     if (nnon_silent == 0)
-      return true;
+      return 0;
     printf("BeepGenerator: instr:'%s'\n", instr.str().c_str());
-    return (utils::exec_system(instr.str()) == 0);
+    if (utils::exec_system(instr.str()))
+      return -1;
+    return nnon_silent;
   } // end generate()
 
   int _volume;

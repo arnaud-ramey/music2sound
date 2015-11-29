@@ -28,22 +28,22 @@ Some tests for music generation with BeepGenerator.
 
 std::string PATH = ros::package::getPath("music2sound");
 
-void test_play(const std::string & s) {
+void test_play(const std::string & s, unsigned int exp_retval) {
   BeepGenerator prim;
-  ASSERT_TRUE(prim.generate(s));
+  ASSERT_EQ(prim.generate(s), exp_retval);
   sleep(1);
 }
 
-TEST(TestSuite, play_empty1) { test_play("{}"); }
-TEST(TestSuite, play_empty2) { test_play("BPM=10"); }
-TEST(TestSuite, play_wrong1) { test_play("A12"); }
-TEST(TestSuite, play01) { test_play("A6"); }
-TEST(TestSuite, play02) { test_play("A4,{},A4"); }
-TEST(TestSuite, play03) { test_play("BPM=2, C5,D5,E5,F5,G5,A5,B5"); }
-TEST(TestSuite, play04) { test_play("E6, D6, C6, D6, E6"); }
-TEST(TestSuite, play05) { test_play("BPM:10, E6, D6, C6, D6, E6"); }
-TEST(TestSuite, play_file1) { test_play(PATH + "/data/music_scores/happy_birthday.score"); }
-TEST(TestSuite, play_file2) { test_play(PATH + "/data/music_scores/happy_birthday2.score"); }
+TEST(TestSuite, play_empty1) { test_play("{}",0); }
+TEST(TestSuite, play_empty2) { test_play("BPM=10",0); }
+TEST(TestSuite, play_wrong1) { test_play("A12",0); }
+TEST(TestSuite, play01) { test_play("A6",1); }
+TEST(TestSuite, play02) { test_play("A4,{},A4",2); }
+TEST(TestSuite, play03) { test_play("BPM=2, C5,D5,E5,F5,G5,A5,B5",7); }
+TEST(TestSuite, play04) { test_play("E6, D6, C6, D6, E6",5); }
+TEST(TestSuite, play05) { test_play("BPM:10, E6, D6, C6, D6, E6",5); }
+TEST(TestSuite, play_file1) { test_play(PATH + "/data/music_scores/happy_birthday.score",25); }
+TEST(TestSuite, play_file2) { test_play(PATH + "/data/music_scores/happy_birthday2.score",25); }
 
 ////////////////////////////////////////////////////////////////////////////////
 

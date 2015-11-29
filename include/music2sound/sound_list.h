@@ -189,6 +189,18 @@ public:
     return true;
   } // end SoundList::from_score()
 
+//  unsigned int nsilences() {
+//    unsigned int nnotes = tnotes.size(), ans;
+//    for (unsigned int note_idx = 0; note_idx < nnotes; ++note_idx)
+//      if (tnotes[note_idx].note_name == "{}")
+//        ++ans;
+//    return ans;
+//  } // end SoundList::nsilences()
+
+//  unsigned int nnon_silences() {
+//    return tnotes.size() - nsilences();
+//  } // end SoundList::nnon_silences()
+
   std::vector<TimedNote> tnotes;
   double duration; // time of last note + duration of last note
 };

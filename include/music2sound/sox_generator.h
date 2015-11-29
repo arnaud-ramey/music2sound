@@ -36,19 +36,24 @@ class SoxGenerator {
 public:
   SoxGenerator() : _wav_map(CACHE_WAV_CSV_FILE) {}
 
-  bool generate(const std::string & score) {
+  //////////////////////////////////////////////////////////////////////////////
+
+  //! \return the number of genereted notes, 0 if empty or in cache, or -1 if failure
+    int generate(const std::string & score, bool skip_cache = false) {
     std::string score_str = score;
     // read file if it is a file
     if (score.find(".score") != std::string::npos
         && !utils::retrieve_file(score, score_str)) {
       printf("Could not read score file'%s'!\n", score.c_str());
-      return false;
+      return -1;
     }
 
     std::ostringstream instr;
     CachedFilesMap::Key key = score_str;
     std::string curr_wav_filename = WAV_BUFFER;
-    if (_wav_map.has_cached_file(key)
+    unsigned nnon_silent = 0;
+    if (!skip_cache
+        && _wav_map.has_cached_file(key)
         && _wav_map.get_cached_file(key, curr_wav_filename)) {
       printf("SoxGenerator: sentence '%s' was already in cache:'%s'\n",
              score_str.c_str(), curr_wav_filename.c_str());
@@ -56,17 +61,17 @@ public:
     else {
       int BPM = SoundList::DEFAULT_BPM;
       if (!_score.from_string(score_str) || !_sound_list.from_score(_score, BPM))
-        return false;
-      unsigned int nnotes = _sound_list.tnotes.size(), nnon_silent = 0;
+        return -1;
+      unsigned int nnotes = _sound_list.tnotes.size();
       if (nnotes == 0)
-        return true;
+        return 0;
       printf("SoxGenerator: synthetizing a sentence of %i notes...\n", nnotes);
       // create an empty sound with SoX
       // http://activearchives.org/wiki/Padding_an_audio_file_with_silence_using_sox
       double duration = _sound_list.duration;
       instr << "sox -n -r 44100 -b 16 -c 2 " << WAV_BUFFER << " trim 0 " << duration;
       if (utils::exec_system(instr.str()))
-        return false;
+        return -1;
       // copy paste the notes
       // http://sox.sourceforge.net/Docs/FAQ
       //  sox -m f1.wav "|sox f2.wav -p pad 4" "|sox f3.wav -p pad 8" out.wav
@@ -89,10 +94,10 @@ public:
       instr << " 2> /dev/null";
       // do not play if only silences
       if (nnon_silent == 0)
-        return true;
+        return 0;
       //printf("creating sound '%s' \n", instr.str().c_str());
       if (utils::exec_system(instr.str()))
-        return false;
+        return -1;
       curr_wav_filename = WAV_BUFFER;
       _wav_map.add_cached_file(key, WAV_BUFFER);
     } // end if not cached
@@ -100,9 +105,9 @@ public:
     instr.str("");
     instr << "play -q " << curr_wav_filename;
     if (utils::exec_system(instr.str()))
-      return false;
+      return -1;
     // play sound
-    return true;
+    return nnon_silent;
   } // end generate()
 
   inline void set_path_prefix(const std::string & path_prefix) {

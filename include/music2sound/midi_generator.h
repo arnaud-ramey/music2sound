@@ -62,18 +62,23 @@ public:
     printf("Parsed %i notes\n", _note2midi_note_name.size());
   }
 
-  bool generate(const std::string & score) {
+  //////////////////////////////////////////////////////////////////////////////
+
+  //! \return the number of genereted notes, 0 if empty or in cache, or -1 if failure
+  int generate(const std::string & score, bool skip_cache = false) {
     std::string score_str = score;
     // read file if it is a file
     if (score.find(".score") != std::string::npos
         && !utils::retrieve_file(score, score_str)) {
       printf("Could not read score file'%s'!\n", score.c_str());
-      return false;
+      return -1;
     }
 
     CachedFilesMap::Key key = score_str;
     std::string curr_MIDI_filename = MIDI_BUFFER;
-    if (_midi_map.has_cached_file(key)
+    unsigned int nnon_silent = 0;
+    if (!skip_cache
+        && _midi_map.has_cached_file(key)
         && _midi_map.get_cached_file(key, curr_MIDI_filename)) {
       printf("MidiGenerator: sentence '%s' was already in cache:'%s'\n",
              score_str.c_str(), curr_MIDI_filename.c_str());
@@ -81,10 +86,10 @@ public:
     else {
       int BPM = SoundList::DEFAULT_BPM;
       if (!_score.from_string(score_str) || !_sound_list.from_score(_score, BPM))
-        return false;
+        return -1;
       if (_sound_list.tnotes.empty())
-        return true;
-      unsigned int nnotes = _sound_list.tnotes.size();
+        return 0;
+      unsigned int nnotes = _sound_list.tnotes.size(), nsilences = 0;
       printf("MidiGenerator: synthetizing a sentence of %i notes...\n", nnotes);
       _sequence.clear();
       // copy paste the notes
@@ -95,13 +100,18 @@ public:
           continue;
         }
         int midi_note_name = _note2midi_note_name[curr_note->note_name];
+        if (midi_note_name == -1)
+          ++nsilences;
         _sequence.push_back(midi_note_name);
         _sequence.push_back(curr_note->duration * SEC2TICKS);
       } // end for i
+      // display
       std::ostringstream vec2str;
       for (unsigned int i = 0; i < _sequence.size(); ++i)
         vec2str << _sequence[i] <<", ";
       printf("vec2str:'%s'\n", vec2str.str().c_str());
+
+      nnon_silent = (_sequence.size()/2 - nsilences);
       _file.noteSequenceFixedVelocity(_sequence, 127);
       _file.writeToFile (MIDI_BUFFER);
       curr_MIDI_filename = MIDI_BUFFER;
@@ -110,7 +120,9 @@ public:
     // play resulting file
     std::ostringstream instr;
     instr << "timidity " << curr_MIDI_filename;
-    return (utils::exec_system(instr.str()) == 0);
+    if(utils::exec_system(instr.str()))
+      return -1;
+    return nnon_silent;
   } // end generate()
 
   int _volume;
