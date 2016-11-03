@@ -53,7 +53,7 @@ public:
       double freq = utils::cast_from_string<double>(words.back());
       _note2frequency.insert(std::make_pair(note, freq));
     } // end for i
-    printf("Parsed %i notes\n", _note2frequency.size());
+    printf("Parsed %li notes\n", _note2frequency.size());
   } // end ctor
 
   //////////////////////////////////////////////////////////////////////////////

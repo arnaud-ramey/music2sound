@@ -59,7 +59,7 @@ public:
       int name = utils::cast_from_string<int>(words.back());
       _note2midi_note_name.insert(std::make_pair(note, name));
     } // end for i
-    printf("Parsed %i notes\n", _note2midi_note_name.size());
+    printf("Parsed %li notes\n", _note2midi_note_name.size());
   }
 
   //////////////////////////////////////////////////////////////////////////////
