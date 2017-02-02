@@ -74,3 +74,9 @@ T3: $ rostopic pub /ros_midi_generator/msg  std_msgs/String  "data: 'A6'"
 To play a score stored in a file :
 
 T3: $ rostopic pub /ros_midi_generator/msg  std_msgs/String  "data: '`rospack find music2sound`/data/music_scores/tetris.score'"
+
+
+Licence
+=======
+
+LGPL v3 (GNU Lesser General Public License version 3).
